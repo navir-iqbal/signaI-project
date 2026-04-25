@@ -24,10 +24,6 @@ body {
     width: 400px;
 }
 
-h2 {
-    margin-bottom: 20px;
-}
-
 input {
     padding: 12px;
     width: 80%;
@@ -44,12 +40,6 @@ button {
     border-radius: 10px;
     cursor: pointer;
     margin-top: 15px;
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-button:hover {
-    transform: scale(1.05);
 }
 
 video {
@@ -80,17 +70,21 @@ video {
 
     <div class="status" id="statusText"></div>
 
-    <video id="videoPlayer" controls></video>
+    <!-- IMPORTANT: using source tag -->
+    <video id="videoPlayer" controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support video.
+    </video>
 </div>
 
 <script>
 
 const BASE_URL = "https://entrust-arrange-duffel.ngrok-free.dev";
 
-// TEXT → VIDEO
 async function sendData() {
     const input = document.getElementById("inputText").value.trim();
     const video = document.getElementById("videoPlayer");
+    const source = document.getElementById("videoSource");
     const status = document.getElementById("statusText");
 
     if (!input) {
@@ -115,30 +109,35 @@ async function sendData() {
         console.log("Response:", data);
 
         if (data.status === "found") {
+
             const fullUrl = BASE_URL + data.video_url;
 
-            // Force reload properly (important fix)
-            video.src = fullUrl;
+            console.log("VIDEO URL:", fullUrl);
+
+            // FULL RESET (critical)
+            video.pause();
+            source.src = "";
+            video.load();
+
+            // SET NEW SOURCE
+            source.src = fullUrl;
             video.load();
 
             video.style.display = "block";
             status.innerText = "Playing...";
 
-            // Handle autoplay safely
             video.play().catch(err => {
-                console.log("Autoplay blocked:", err);
+                console.error("Playback failed:", err);
                 status.innerText = "Click play to start video";
             });
 
         } else {
             status.innerText = "No video found";
-            alert("No sign video available");
         }
 
     } catch (error) {
         console.error(error);
         status.innerText = "Backend error";
-        alert("Error connecting to backend");
     }
 }
 
