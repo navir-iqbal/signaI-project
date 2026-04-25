@@ -7,7 +7,7 @@
 <style>
 body {
     margin: 0;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,33 +17,53 @@ body {
 
 .card {
     background: white;
-    padding: 30px;
-    border-radius: 15px;
+    padding: 35px;
+    border-radius: 18px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    width: 400px;
+}
+
+h2 {
+    margin-bottom: 20px;
 }
 
 input {
-    padding: 10px;
-    width: 70%;
+    padding: 12px;
+    width: 80%;
     border-radius: 10px;
     border: 1px solid #ccc;
+    outline: none;
 }
 
 button {
-    padding: 10px 15px;
+    padding: 12px 18px;
     border: none;
-    background: orange;
+    background: linear-gradient(135deg, #ff9966, #ff5e62);
     color: white;
     border-radius: 10px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
 }
 
 video {
     margin-top: 20px;
     width: 100%;
+    border-radius: 12px;
     display: none;
+    background: black;
+}
+
+.status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: gray;
 }
 </style>
 </head>
@@ -54,9 +74,11 @@ video {
     <h2>Text → Sign Language</h2>
 
     <input id="inputText" placeholder="Type a word..." />
-    <br><br>
+    <br>
 
     <button onclick="sendData()">Translate</button>
+
+    <div class="status" id="statusText"></div>
 
     <video id="videoPlayer" controls></video>
 </div>
@@ -67,8 +89,17 @@ const BASE_URL = "https://entrust-arrange-duffel.ngrok-free.dev";
 
 // TEXT → VIDEO
 async function sendData() {
-    const input = document.getElementById("inputText").value;
+    const input = document.getElementById("inputText").value.trim();
     const video = document.getElementById("videoPlayer");
+    const status = document.getElementById("statusText");
+
+    if (!input) {
+        alert("Enter a word");
+        return;
+    }
+
+    status.innerText = "Loading...";
+    video.style.display = "none";
 
     try {
         const response = await fetch(BASE_URL + "/translate", {
@@ -84,16 +115,30 @@ async function sendData() {
         console.log("Response:", data);
 
         if (data.status === "found") {
-            video.src = BASE_URL + data.video_url;
+            const fullUrl = BASE_URL + data.video_url;
+
+            // Force reload properly (important fix)
+            video.src = fullUrl;
+            video.load();
+
             video.style.display = "block";
-            video.play();
+            status.innerText = "Playing...";
+
+            // Handle autoplay safely
+            video.play().catch(err => {
+                console.log("Autoplay blocked:", err);
+                status.innerText = "Click play to start video";
+            });
+
         } else {
-            alert("No video found");
+            status.innerText = "No video found";
+            alert("No sign video available");
         }
 
     } catch (error) {
         console.error(error);
-        alert("Backend error");
+        status.innerText = "Backend error";
+        alert("Error connecting to backend");
     }
 }
 
