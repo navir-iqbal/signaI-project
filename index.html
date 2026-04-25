@@ -1,144 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
 <title>SignAI</title>
+
 <style>
-    body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: #f5f7fb;
-    }
+html { scroll-behavior: smooth; }
 
-    .card {
-        background: white;
-        padding: 35px;
-        border-radius: 18px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-        width: 400px;
-    }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-top: 70px;
 
-    h2 {
-        margin-bottom: 20px;
-    }
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,180,120,0.8), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(120,140,255,0.8), transparent 40%),
+        radial-gradient(circle at 70% 80%, rgba(255,120,200,0.7), transparent 40%),
+        linear-gradient(135deg, #f5f7fb, #eaeefe);
+}
 
-    input {
-        padding: 12px;
-        width: 80%;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        outline: none;
-    }
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 25px;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.3);
+    z-index: 1000;
+}
 
-    button {
-        padding: 12px 18px;
-        border: none;
-        background: linear-gradient(135deg, #ff9966, #ff5e62);
-        color: white;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-top: 15px;
-        font-weight: 500;
-        transition: 0.2s;
-    }
+.logo { font-weight: 600; }
 
-    button:hover {
-        transform: scale(1.05);
-    }
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
 
-    video {
-        margin-top: 20px;
-        width: 100%;
-        border-radius: 12px;
-        display: none;
-        background: black;
-    }
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    position: relative;
+}
 
-    .status {
-        margin-top: 10px;
-        font-size: 14px;
-        color: gray;
-        min-height: 20px;
-    }
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: black;
+    transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* SECTIONS */
+section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 20px;
+}
+
+/* CARD */
+.card {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+input {
+    padding: 12px;
+    width: 65%;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #ff9966, #ff5e62);
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* VIDEO */
+video {
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 15px;
+    display: none;
+}
+
+/* CAMERA BOX */
+.camera-box {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(0,0,0,0.05);
+}
 </style>
 </head>
+
 <body>
 
-<div class="card">
-    <h2>Text → Sign Language</h2>
-
-    <input id="inputText" placeholder="Type a word..." />
-    <br />
-    <button onclick="sendData()">Translate</button>
-
-    <div class="status" id="statusText"></div>
-
-    <video id="videoPlayer" controls playsinline preload="auto"></video>
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">🖐 SignAI</div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#project">Project</a>
+        <a href="#signai">SignAI</a>
+        <a href="#camera">Camera</a>
+    </div>
 </div>
 
+<!-- HOME -->
+<section id="home">
+    <div>
+        <h1>Sign Language Interface</h1>
+        <p>Bridging communication using AI and visual language.</p>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="card">
+        <h2>About</h2>
+        <p>This system converts text into sign language videos and detects hand gestures.</p>
+    </div>
+</section>
+
+<!-- PROJECT -->
+<section id="project">
+    <div class="card">
+        <h2>Project</h2>
+        <p>AI + Web based accessibility tool for the hearing impaired.</p>
+    </div>
+</section>
+
+<!-- TEXT TO SIGN -->
+<section id="signai">
+    <div class="card">
+        <h2>Text → Sign Language</h2>
+
+        <input id="inputText" placeholder="Type a word..." />
+        <br>
+        <button onclick="sendData()">Translate</button>
+
+        <video id="videoPlayer" controls></video>
+    </div>
+</section>
+
+<!-- CAMERA SECTION -->
+<section id="camera">
+    <div class="card">
+        <h2>Camera Detection</h2>
+
+        <div class="camera-box">
+            <button onclick="startCamera()">Start Camera</button>
+            <p id="cameraResult">Result will appear here</p>
+        </div>
+    </div>
+</section>
+
 <script>
-const BASE_URL = "https://entrust-arrange-duffel.ngrok-free.dev";
 
+// TEXT → VIDEO
 async function sendData() {
-    const input = document.getElementById("inputText").value.trim();
+    const input = document.getElementById("inputText").value;
     const video = document.getElementById("videoPlayer");
-    const status = document.getElementById("statusText");
 
-    if (!input) {
-        alert("Enter a word");
-        return;
-    }
+    const response = await fetch("http://127.0.0.1:8000/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input })
+    });
 
-    status.innerText = "Loading...";
-    video.style.display = "none";
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+    const data = await response.json();
 
-    try {
-        const response = await fetch(BASE_URL + "/translate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true"
-            },
-            body: JSON.stringify({ text: input })
-        });
-
-        const data = await response.json();
-        console.log("Response:", data);
-
-        if (data.status === "found") {
-            const fullUrl = BASE_URL + data.video_url;
-
-            video.src = fullUrl;
-            video.load();
-            video.style.display = "block";
-            status.innerText = "Video loaded. Press play.";
-
-            video.oncanplay = () => {
-                status.innerText = "Ready";
-            };
-
-            video.onerror = () => {
-                status.innerText = "Video failed to load";
-            };
-        } else {
-            status.innerText = "No video found";
-            alert("No sign video available");
-        }
-    } catch (error) {
-        console.error(error);
-        status.innerText = "Backend error";
-        alert("Error connecting to backend");
+    if (data.status === "found") {
+        video.src = data.video_url;
+        video.style.display = "block";
+        video.play();
+    } else {
+        alert("No video found");
     }
 }
+
+// CAMERA
+async function startCamera() {
+    document.getElementById("cameraResult").innerText = "Opening camera...";
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/camera");
+        const data = await res.json();
+
+        document.getElementById("cameraResult").innerText =
+            "Result: " + data.text;
+
+    } catch (err) {
+        document.getElementById("cameraResult").innerText =
+            "Error connecting to backend";
+    }
+}
+
 </script>
 
 </body>
