@@ -14,7 +14,7 @@ app = FastAPI()
 # -------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all (dev mode)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,10 +23,12 @@ app.add_middleware(
 # -------------------------------
 # ✅ Serve video files
 # -------------------------------
-if not os.path.exists("videos"):
-    os.makedirs("videos")
+VIDEO_DIR = "videos"
 
-app.mount("/videos", StaticFiles(directory="videos"), name="videos")
+if not os.path.exists(VIDEO_DIR):
+    os.makedirs(VIDEO_DIR)
+
+app.mount("/videos", StaticFiles(directory=VIDEO_DIR), name="videos")
 
 # -------------------------------
 # ✅ Request schema
@@ -41,12 +43,13 @@ class InputText(BaseModel):
 def translate(data: InputText):
     text = data.text.lower().strip()
 
-    video_path = f"videos/{text}.mp4"
+    filename = f"{text}.mp4"
+    video_path = os.path.join(VIDEO_DIR, filename)
 
     if os.path.exists(video_path):
         return {
             "status": "found",
-            "video_url": f"http://127.0.0.1:8000/videos/{text}.mp4"
+            "video_url": f"/videos/{filename}"   # ✅ FIXED
         }
     else:
         return {
@@ -59,14 +62,14 @@ def translate(data: InputText):
 # -------------------------------
 @app.get("/camera")
 def run_camera():
-    result = start_camera()  # runs for ~5 seconds
+    result = start_camera()
     return {
         "status": "success",
         "text": result
     }
 
 # -------------------------------
-# ✅ HEALTH CHECK (optional but smart)
+# ✅ HEALTH CHECK
 # -------------------------------
 @app.get("/")
 def home():
