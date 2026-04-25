@@ -10,7 +10,7 @@ from detect import start_camera
 app = FastAPI()
 
 # -------------------------------
-# ✅ CORS (frontend connection)
+# ✅ CORS (allow frontend)
 # -------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -49,7 +49,7 @@ def translate(data: InputText):
     if os.path.exists(video_path):
         return {
             "status": "found",
-            "video_url": f"/videos/{filename}"   # ✅ FIXED
+            "video_url": f"/videos/{filename}"   # ✅ CORRECT (relative)
         }
     else:
         return {
