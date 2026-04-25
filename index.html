@@ -1,89 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SignAI</title>
-
 <style>
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f5f7fb;
-}
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f5f7fb;
+    }
 
-.card {
-    background: white;
-    padding: 35px;
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-    width: 400px;
-}
+    .card {
+        background: white;
+        padding: 35px;
+        border-radius: 18px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        width: 400px;
+    }
 
-h2 {
-    margin-bottom: 20px;
-}
+    h2 {
+        margin-bottom: 20px;
+    }
 
-input {
-    padding: 12px;
-    width: 80%;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    outline: none;
-}
+    input {
+        padding: 12px;
+        width: 80%;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
 
-button {
-    padding: 12px 18px;
-    border: none;
-    background: linear-gradient(135deg, #ff9966, #ff5e62);
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: 0.2s;
-}
+    button {
+        padding: 12px 18px;
+        border: none;
+        background: linear-gradient(135deg, #ff9966, #ff5e62);
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
 
-button:hover {
-    transform: scale(1.05);
-}
+    button:hover {
+        transform: scale(1.05);
+    }
 
-video {
-    margin-top: 20px;
-    width: 100%;
-    border-radius: 12px;
-    display: none;
-    background: black;
-}
+    video {
+        margin-top: 20px;
+        width: 100%;
+        border-radius: 12px;
+        display: none;
+        background: black;
+    }
 
-.status {
-    margin-top: 10px;
-    font-size: 14px;
-    color: gray;
-}
+    .status {
+        margin-top: 10px;
+        font-size: 14px;
+        color: gray;
+        min-height: 20px;
+    }
 </style>
 </head>
-
 <body>
 
 <div class="card">
     <h2>Text → Sign Language</h2>
 
     <input id="inputText" placeholder="Type a word..." />
-    <br>
-
+    <br />
     <button onclick="sendData()">Translate</button>
 
     <div class="status" id="statusText"></div>
 
-    <video id="videoPlayer" controls></video>
+    <video id="videoPlayer" controls playsinline preload="auto"></video>
 </div>
 
 <script>
-
 const BASE_URL = "https://entrust-arrange-duffel.ngrok-free.dev";
 
 async function sendData() {
@@ -98,6 +97,9 @@ async function sendData() {
 
     status.innerText = "Loading...";
     video.style.display = "none";
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
     try {
         const response = await fetch(BASE_URL + "/translate", {
@@ -113,40 +115,30 @@ async function sendData() {
         console.log("Response:", data);
 
         if (data.status === "found") {
-
             const fullUrl = BASE_URL + data.video_url;
 
-            // 🔥 FULL RESET (fixes AbortError + playback bugs)
-            video.pause();
-            video.removeAttribute("src");
-            video.load();
-
-            // 🔥 SET NEW VIDEO
             video.src = fullUrl;
+            video.load();
             video.style.display = "block";
+            status.innerText = "Video loaded. Press play.";
 
-            // 🔥 WAIT until ready (fixes NotSupportedError)
-            video.onloadeddata = () => {
+            video.oncanplay = () => {
                 status.innerText = "Ready";
-
-                video.play().catch(err => {
-                    console.log("Autoplay blocked:", err);
-                    status.innerText = "Click play to start video";
-                });
             };
 
+            video.onerror = () => {
+                status.innerText = "Video failed to load";
+            };
         } else {
             status.innerText = "No video found";
             alert("No sign video available");
         }
-
     } catch (error) {
         console.error(error);
         status.innerText = "Backend error";
         alert("Error connecting to backend");
     }
 }
-
 </script>
 
 </body>
